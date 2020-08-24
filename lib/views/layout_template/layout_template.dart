@@ -1,0 +1,43 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:responsive_builder/responsive_builder.dart';
+import 'package:the_basics/locator.dart';
+import 'package:the_basics/routing/route_names.dart';
+import 'package:the_basics/routing/router.dart';
+import 'package:the_basics/services/navigation_service.dart';
+import 'package:the_basics/widgets/centered_view/centered_view.dart';
+import 'package:the_basics/widgets/navigation_bar/navigation_bar.dart';
+import 'package:the_basics/widgets/navigation_drawer/navigation_drawer.dart';
+
+class LayoutTemplate extends StatelessWidget {
+  const LayoutTemplate({Key key}) : super(key: key);
+  static final scaffoldKey = GlobalKey<ScaffoldState>();
+  static NavigatorState navigatorState;
+  @override
+  Widget build(BuildContext context) {
+    navigatorState = Navigator.of(context);
+    return  ResponsiveBuilder(
+        builder: (context, sizingInformation) => Scaffold(
+          key: scaffoldKey,
+          drawer: sizingInformation.deviceScreenType == DeviceScreenType.mobile || sizingInformation.deviceScreenType == DeviceScreenType.tablet
+              ? NavigationDrawer()
+              : null,
+          backgroundColor: Colors.white,
+          body: CenteredView(
+            child: Column(
+              children: <Widget>[
+                NavigationBar(),
+                Expanded(
+                  child: Navigator(
+                    key: locator<NavigationService>().navigatorKey,
+                    onGenerateRoute: generateRoute,
+                    initialRoute: HomeRoute,
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      );
+  }
+}
